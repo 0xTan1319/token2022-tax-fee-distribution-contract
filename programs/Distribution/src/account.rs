@@ -5,9 +5,9 @@ pub struct GlobalInfo {
     pub admin: Pubkey,
     pub caller: Pubkey,
     pub current_reward: u64,
-    pub halved_times: u64,
-    pub last_halved_block_number: u64,
-    pub last_mine_time: i64,
+    pub halved_times: u64,             // Max reward halve time is 6
+    pub last_halved_block_number: u64, // Reward will be halved each 69420 blocks
+    pub last_mine_time: i64,           // Min reward distribution time will be 5 mins
 }
 
 impl GlobalInfo {

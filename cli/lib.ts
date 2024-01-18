@@ -22,6 +22,7 @@ import {
 import { REWARD_TOKEN_MINT, PROGRAM_ID } from "./config";
 import { getAssociatedTokenAccount, TOKEN_2022_PROGRAM_ID } from "./utils";
 
+/// Create instruction to initialize global PDA as admin
 export const initProjectIx = async (
   payer: PublicKey,
   callerWallet: PublicKey,
@@ -43,6 +44,7 @@ export const initProjectIx = async (
   return ix;
 };
 
+/// Create instruction to update caller address as admin
 export const updateCallerAddressIx = async (
   payer: PublicKey,
   newCaller: PublicKey,
@@ -60,6 +62,7 @@ export const updateCallerAddressIx = async (
   return ix;
 };
 
+/// Create instruction to distribute reward for won miner as caller
 export const mineBlockIx = async (
   payer: PublicKey,
   winner: PublicKey,
@@ -81,6 +84,7 @@ export const mineBlockIx = async (
 
   let ixs = [];
 
+  /// Check user ATA and add create Ix if not initialized yet
   const ataInfo = await connection.getAccountInfo(userTokenAccount);
   if (!ataInfo?.owner || ataInfo.owner.equals(PublicKey.default)) {
     console.log("Adding ATA creation ix..");
@@ -116,6 +120,7 @@ export const mineBlockIx = async (
   return ixs;
 };
 
+/// Get Global PDA address
 export const getGlobalKey = async (): Promise<PublicKey> => {
   const [globalAuthority] = await PublicKey.findProgramAddress(
     [Buffer.from(GLOBAL_AUTHORITY_SEED)],
@@ -124,6 +129,7 @@ export const getGlobalKey = async (): Promise<PublicKey> => {
   return globalAuthority;
 };
 
+/// Get Global PDA state
 export const getGlobalState = async (
   program: Program
 ): Promise<GlobalInfo | null> => {
@@ -138,6 +144,7 @@ export const getGlobalState = async (
   }
 };
 
+/// Get MinedInfo PDA address for a specific block number
 export const getMinedInfoKey = async (
   blockNumber: number
 ): Promise<PublicKey> => {
@@ -152,6 +159,7 @@ export const getMinedInfoKey = async (
   return minedInfoKey;
 };
 
+/// Get MinedInfo PDA state for a specific block number
 export const getMinedInfoState = async (
   blockNumber: number,
   program: Program
@@ -167,6 +175,7 @@ export const getMinedInfoState = async (
   }
 };
 
+/// Find all MinedInfo PDAs and parse states
 export const getAllMinedInfoAccounts = async (
   program: Program,
   connection: Connection

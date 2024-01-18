@@ -19,6 +19,16 @@ pub mod distribution {
 
     use super::*;
 
+    /**
+     * Admin should initialize Global PDA once after deploy program
+     *
+     * Params:
+     *  - admin_wallet: the contract immutable admin address
+     *  - caller_wallet: initial caller address who has the rights for reward
+     *    distribution
+     *  - staring_block: this contract will be distribute reward for blocks
+     *    since after `starting_block`
+     */
     pub fn initialize(
         ctx: Context<Initialize>,
         admin_wallet: Pubkey,
@@ -31,12 +41,19 @@ pub mod distribution {
         global_authority.caller = caller_wallet;
         global_authority.current_reward = INITIAL_REWARD;
         global_authority.halved_times = 0;
+        // Reward can be distribute since starting block
         global_authority.last_halved_block_number = starting_block;
         global_authority.last_mine_time = 0;
 
         Ok(())
     }
 
+    /**
+     * Admin able to update the caller address
+     *
+     * Params:
+     *  - new_caller: the new caller address
+     */
     pub fn update_caller_address(ctx: Context<UpdateCaller>, new_caller: Pubkey) -> Result<()> {
         let global_authority = &mut ctx.accounts.global_authority;
 
@@ -50,6 +67,12 @@ pub mod distribution {
         Ok(())
     }
 
+    /**
+     * Caller distribute reward to won miner for a specific block number
+     *
+     * Params:
+     *  - block_number: the number of mined block
+     */
     pub fn mine_block(ctx: Context<MineBlock>, block_number: u64) -> Result<()> {
         let global_authority = &mut ctx.accounts.global_authority;
         let mined_info = &mut ctx.accounts.mined_info;
@@ -62,7 +85,7 @@ pub mod distribution {
         );
 
         let now_time_stamp = Clock::get()?.unix_timestamp;
-        // Minimum block mining count should be more than 5 mins
+        // Minimum next block mining time should be more than 5 mins
         require!(
             (now_time_stamp - global_authority.last_mine_time) >= MIN_BLOCK_MINING_TIME,
             DistributionError::InvalidMiningTime
@@ -74,6 +97,7 @@ pub mod distribution {
             DistributionError::InvalidBlockNumber
         );
 
+        // Reward will be halved each 69420 blocks. Maximum 6 times
         if global_authority.halved_times < MAX_HALVE_TIMES {
             let mut halve_times =
                 (block_number - global_authority.last_halved_block_number) / HALVED_BLOCK_COUNT;
@@ -93,6 +117,8 @@ pub mod distribution {
 
         let mut reward = global_authority.current_reward;
         let supply = ctx.accounts.token_mint.supply;
+        // If reward token supply reach to maximum of tokenomics
+        // Reward will be zero
         if supply == MAX_SUPPLY {
             reward = 0;
         } else if supply + reward > MAX_SUPPLY {
@@ -118,11 +144,13 @@ pub mod distribution {
             reward,
         )?;
 
+        // Save new reward info in MinedInfo PDA
         mined_info.winner_address = address;
         mined_info.block_number = block_number;
         mined_info.reward_sent = reward;
         mined_info.time_stamp = now_time_stamp;
 
+        // Update last reward time of Global PDA
         global_authority.last_mine_time = now_time_stamp;
 
         Ok(())
@@ -184,15 +212,10 @@ pub struct MineBlock<'info> {
         address = REWARD_TOKEN_MINT.parse::<Pubkey>().unwrap()
     )]
     pub token_mint: InterfaceAccount<'info, Mint>,
-    
-    #[account(
-        mut,
-        // init_if_needed,
-        // associated_token::mint = token_mint,
-        // associated_token::authority = winner,
-        // payer = caller,
-        // associated_token::token_program = token_program,
-    )]
+
+    // User ATA should be initialized if not created yet
+    // This will be proceed in web3 side by Token2022 program
+    #[account(mut)]
     pub user_token_account: InterfaceAccount<'info, TokenAccount>,
 
     #[account(
