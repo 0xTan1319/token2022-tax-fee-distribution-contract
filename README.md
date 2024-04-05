@@ -1,6 +1,6 @@
-# Beetcoin Token Distribution Contract
+# Token2022 Token Distribution Contract
 
-Reward distribution contract in token 2022 reward - Beetcoin tokens for block miners
+Reward distribution contract in token 2022 reward - Token2022 tokens for block miners
 
 ## Install Dependencies
 
