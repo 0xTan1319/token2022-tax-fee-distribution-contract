@@ -1,12 +1,12 @@
-# Token2022 Token Distribution Contract
+# Token2022 Tax/Fee Distribution Contract
 
 Reward distribution contract in token 2022 reward - Token2022 tokens for block miners
 
 ## Install Dependencies
 
 - Install `node` and `yarn`
-- Confirm the solana wallet preparation: `/root/fury/devnet.json` in test case
-- Need to have one more wallet for admin: `/root/fury/deploy-231218.json` in test case
+- Confirm the solana wallet preparation: `../keys/devnet.json` in test case
+- Need to have one more wallet for admin: `/deploy-231218.json` in test case
 
 ## Usage
 

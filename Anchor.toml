@@ -4,11 +4,11 @@ distribution = "2YkXmCtRc6BzST3eavg7pxnYRJmoMBXEB8pzDN77wuhN"
 distribution = "2YkXmCtRc6BzST3eavg7pxnYRJmoMBXEB8pzDN77wuhN"
 
 [registry]
-url = "https://anchor.projectserum.com"
+url = "https://github.com/0xTan1319"
 
 [provider]
 cluster = "localnet"
-wallet = "~/fury/deploy-231218.json"
+wallet = "../key/uu.json"
 
 [scripts]
 test = "yarn run ts-mocha -p ./tsconfig.json -t 1000000 tests/**/*.ts"
