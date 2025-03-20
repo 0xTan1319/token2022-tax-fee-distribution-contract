@@ -2,6 +2,10 @@
 
 Reward distribution contract in token 2022 reward - Token2022 tokens for block miners
 
+## Contact
+
+If you need help or wanna build kinda this project, contact here: [Telegram](https://t.me/shiny0103) | [Twitter](https://x.com/0xTan1319)
+
 ## Install Dependencies
 
 - Install `node` and `yarn`
